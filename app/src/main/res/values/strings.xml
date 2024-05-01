@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Taller3CompuMovil</string>
+    <string name="login">Login</string>
+    <string name="login2">LOGIN</string>
+    <string name="id">ID</string>
+    <string name="nombre">Nombre</string>
+    <string name="apellido">Apellido</string>
+    <string name="mail">E-mail</string>
+    <string name="contra">Contraseña</string>
+    <string name="title_activity_maps">MapsActivity</string>
+</resources>
