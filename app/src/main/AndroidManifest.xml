@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-feature android:name="android.hardware.location.gps" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -29,7 +30,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Taller3CompuMovil"
         tools:targetApi="31">
-
+        <activity
+            android:name=".DisponiblesActivity"
+            android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -41,7 +44,6 @@
              project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
              "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
         -->
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.taller3compumovil.fileprovider"
@@ -59,7 +61,6 @@
         <activity
             android:name=".MapsActivity"
             android:exported="false" />
-
         <activity
             android:name=".LoginActivity"
             android:exported="true">

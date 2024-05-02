@@ -6,6 +6,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 
 
@@ -72,11 +73,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
 
         setupSensor()
         createLocationRequest()
+        BotonDisponibles()
     }
 
     private fun setupMap() {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    private fun BotonDisponibles() {
+        binding.listar.setOnClickListener {
+            val intent = Intent(this, DisponiblesActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
