@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_weight="1"
-            android:text="@string/login"
+            android:text="@string/register"
             android:textColor="@color/white"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,17 +48,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
+            app:layout_constraintBottom_toTopOf="@+id/numID"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/registertitulo">
+            app:layout_constraintTop_toBottomOf="@+id/registertitulo"
+            app:layout_constraintVertical_bias="0.0">
 
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imagenPerfil"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/vaultboy"
+                android:src="@drawable/loginjose"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
@@ -66,9 +68,87 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0" />
 
+            <ImageButton
+                android:id="@+id/edit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@drawable/blanco_redondeado_bg"
+                android:onClick="showPopupMenu"
+                android:paddingTop="7dp"
+                android:src="@drawable/noun_edit_5509703"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.623"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+        <EditText
+            android:id="@+id/numID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/white"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:hint="@string/id"
+            android:inputType="number"
+            android:maxLines="1"
+            android:paddingStart="15dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.4" />
+
+        <EditText
+            android:id="@+id/nombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/white"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:hint="@string/nombre"
+            android:maxLines="1"
+            android:paddingStart="15dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/apellido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/white"
+            android:ems="10"
+            android:hint="@string/apellido"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="15dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.6" />
 
         <EditText
             android:id="@+id/mail"
@@ -79,18 +159,17 @@
             android:backgroundTint="@color/white"
             android:ems="10"
             android:hint="@string/mail"
-            android:imeOptions="actionDone"
             android:inputType="textEmailAddress"
             android:maxLines="1"
+            android:imeOptions="actionDone"
             android:paddingStart="15dp"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.477" />
+            app:layout_constraintVertical_bias="0.7" />
 
         <EditText
             android:id="@+id/contra"
@@ -101,18 +180,17 @@
             android:backgroundTint="@color/white"
             android:ems="10"
             android:hint="@string/contra"
-            android:imeOptions="actionDone"
             android:inputType="textPassword"
             android:maxLines="1"
+            android:imeOptions="actionDone"
             android:paddingStart="15dp"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.664" />
+            app:layout_constraintVertical_bias="0.8" />
 
         <Button
             android:id="@+id/botonSiguiente"
@@ -122,7 +200,7 @@
             android:layout_marginEnd="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:hint="@string/login"
+            android:hint="@string/register"
             android:textColorHint="@color/black"
             android:background="@drawable/blanco_redondeado_bg"
             app:layout_constraintStart_toStartOf="parent"

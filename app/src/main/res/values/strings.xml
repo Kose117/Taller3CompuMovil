@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Taller3CompuMovil</string>
     <string name="login">Login</string>
+    <string name="register">Register </string>
     <string name="login2">LOGIN</string>
     <string name="id">ID</string>
     <string name="nombre">Nombre</string>
