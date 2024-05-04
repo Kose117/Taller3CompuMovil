@@ -51,10 +51,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation (libs.circleimageview)
     implementation("com.google.android.gms:play-services-maps")
     implementation("com.google.android.gms:play-services-location")
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
-    implementation ("com.google.code.gson:gson:2.8.6")
-    implementation ("com.github.MKergall:osmbonuspack:6.6.0")
+    implementation ("com.google.code.gson:gson:2.10.1")
+    implementation ("com.github.MKergall:osmbonuspack:6.8.0")
 }
