@@ -8,4 +8,8 @@
     <string name="mail">E-mail</string>
     <string name="contra">Contraseña</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="disponible">Establecer como disponible</string>
+    <string name="cerrar">Cerrar Sesion</string>
+    <string name="lista">Listar disponibles</string>
+    <string name="posicion">Posición </string>
 </resources>
