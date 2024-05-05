@@ -8,11 +8,13 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 
 
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,8 +24,14 @@ import com.example.taller3compumovil.databinding.ActivityMapsBinding
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
+import models.availabilityState
+import models.availabilityStateRequest
+import network.RetrofitClient
 import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 
 
@@ -54,26 +62,43 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        locationClient = LocationServices.getFusedLocationProviderClient(this)
-        setupMap()
-        permissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        val sharedPreferences = getSharedPreferences("prefs_usuario", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("token_jwt", null)
+        if(token == null){
+            val intent = Intent(baseContext, LoginActivity::class.java)
+            startActivity(intent)
+        }else{
+            locationClient = LocationServices.getFusedLocationProviderClient(this)
+            setupMap()
+            permissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
-        binding.posicionar.setOnClickListener {
-            currentLocationMarker?.position?.let { pos -> moveMarkerToLocation(pos) }
-        }
+            binding.posicionar.setOnClickListener {
+                currentLocationMarker?.position?.let { pos -> moveMarkerToLocation(pos) }
+            }
 
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.lastLocation?.let {
-                    lastLocation = it
-                    updateLocationUI(it)
+            locationCallback = object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    locationResult.lastLocation?.let {
+                        lastLocation = it
+                        updateLocationUI(it)
+                    }
                 }
             }
-        }
 
-        setupSensor()
-        createLocationRequest()
-        BotonDisponibles()
+            val imagen = intent.getStringExtra("imagen")
+            if(imagen != null){
+                val bitmap = BitmapFactory.decodeFile(imagen)
+
+                Log.i("IMG", imagen)
+                Log.i("IMG", "La imagen SI llego")
+            } else {
+                Log.i("IMG", "La imagen NO llego")
+            }
+
+            setupSensor()
+            createLocationRequest()
+            BotonDisponibles()
+        }
     }
 
     private fun setupMap() {
@@ -86,6 +111,46 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             val intent = Intent(this, DisponiblesActivity::class.java)
             startActivity(intent)
         }
+
+        binding.cambiarEstado.setOnClickListener {
+            changeAvailabilityState()
+        }
+
+        binding.cerrarSesion.setOnClickListener {
+            borrarToken()
+        }
+    }
+
+    private fun changeAvailabilityState () {
+        val state = availabilityStateRequest(available = true)
+        RetrofitClient.create(applicationContext).changeAvailability(state).enqueue(object : Callback<availabilityState> {
+            override fun onResponse(
+                call: Call<availabilityState>,
+                response: Response<availabilityState>
+            ) {
+                if(response.isSuccessful){
+                    val state = response.body()?.available
+                    Log.i("AVAILABILITY STATE", state.toString())
+                    Toast.makeText(this@MapsActivity, "Changed availability to " + state.toString(), Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this@MapsActivity, "Couldn't change availability, try again later", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<availabilityState>, t: Throwable) {
+                Toast.makeText(this@MapsActivity, "Error en la conexión", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun borrarToken() {
+        val sharedPreferences = getSharedPreferences("prefs_usuario", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            remove("token_jwt")
+            apply()
+        }
+        val intent = Intent(baseContext, LoginActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
