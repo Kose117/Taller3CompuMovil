@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.taller3compumovil.adapters.ActivosAdapter
 import com.example.taller3compumovil.databinding.ActivityDisponiblesBinding
+import models.User
 import models.availabilityResponse
 import network.RetrofitClient
 import retrofit2.Call
@@ -37,8 +38,14 @@ class DisponiblesActivity : AppCompatActivity() {
                 response: Response<availabilityResponse>
             ) {
                 if(response.isSuccessful){
-                    val response = response.body()
-                    Log.i("API RESPONSE", response.toString())
+                    val respuesta = response.body()
+                    val usuarios = respuesta?.users ?: emptyList()
+                    /*val listaUsuarios: List<User> = usuarios.map {
+
+                    }*/
+
+
+                    Log.i("API RESPONSE", respuesta.toString())
                 }else{
                     Toast.makeText(this@DisponiblesActivity, "Authentication failed", Toast.LENGTH_SHORT).show()
                 }
