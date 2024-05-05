@@ -29,12 +29,17 @@ import models.availabilityState
 import models.availabilityStateRequest
 import models.user.defaultResponse
 import models.user.locationRequest
+import models.user.uploadImageResponse
 import network.RetrofitClient
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import util.bitmapToFile
 import java.io.File
 
 
@@ -91,6 +96,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             val imagen = intent.getStringExtra("imagen")
             if(imagen != null){
                 val bitmap = BitmapFactory.decodeFile(imagen)
+                val file = bitmapToFile(applicationContext, bitmap, "profile_picture")
+                val requestFile = file.asRequestBody("image/png".toMediaTypeOrNull())
+
+                val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+                RetrofitClient.create(applicationContext).uploadImage(body).enqueue(object : Callback <uploadImageResponse>{
+                    override fun onResponse(
+                        call: Call<uploadImageResponse>,
+                        response: Response<uploadImageResponse>
+                    ) {
+                        if(response.isSuccessful){
+                            Log.i("UPLOAD IMAGE", "Image uploaded sucesfully")
+                        }else{
+                            Log.i("UPLOAD IMAGE", "error uploading the picture")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<uploadImageResponse>, t: Throwable) {
+                        Toast.makeText(this@MapsActivity, "Error en la conexión", Toast.LENGTH_SHORT).show()
+                    }
+                })
 
                 Log.i("IMG", imagen)
                 Log.i("IMG", "La imagen SI llego")

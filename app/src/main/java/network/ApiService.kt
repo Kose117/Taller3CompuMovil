@@ -8,11 +8,14 @@ import models.availabilityState
 import models.availabilityStateRequest
 import models.user.defaultResponse
 import models.user.locationRequest
+import models.user.uploadImageResponse
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import util.Authorized
 
 interface ApiService {
@@ -34,4 +37,10 @@ interface ApiService {
     @Authorized
     @PUT("user/location/")
     fun updateUserLocation(@Body request: locationRequest): Call<defaultResponse>
+
+
+    @Authorized
+    @POST("user/upload/picture")
+    fun uploadImage(@Part image: MultipartBody.Part): Call<uploadImageResponse>
+
 }
