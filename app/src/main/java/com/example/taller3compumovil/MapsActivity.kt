@@ -24,14 +24,22 @@ import com.example.taller3compumovil.databinding.ActivityMapsBinding
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
+import models.LoginResponse
 import models.availabilityState
 import models.availabilityStateRequest
+import models.user.defaultResponse
+import models.user.locationRequest
+import models.user.uploadImageResponse
 import network.RetrofitClient
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import util.bitmapToFile
 import java.io.File
 
 
@@ -88,6 +96,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             val imagen = intent.getStringExtra("imagen")
             if(imagen != null){
                 val bitmap = BitmapFactory.decodeFile(imagen)
+                val file = bitmapToFile(applicationContext, bitmap, "profile_picture")
+                val requestFile = file.asRequestBody("image/png".toMediaTypeOrNull())
+
+                val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+                RetrofitClient.create(applicationContext).uploadImage(body).enqueue(object : Callback <uploadImageResponse>{
+                    override fun onResponse(
+                        call: Call<uploadImageResponse>,
+                        response: Response<uploadImageResponse>
+                    ) {
+                        if(response.isSuccessful){
+                            Log.i("UPLOAD IMAGE", "Image uploaded sucesfully")
+                        }else{
+                            Log.i("UPLOAD IMAGE", "error uploading the picture")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<uploadImageResponse>, t: Throwable) {
+                        Toast.makeText(this@MapsActivity, "Error en la conexión", Toast.LENGTH_SHORT).show()
+                    }
+                })
 
                 Log.i("IMG", imagen)
                 Log.i("IMG", "La imagen SI llego")
@@ -149,7 +178,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             remove("token_jwt")
             apply()
         }
-        val intent = Intent(baseContext, LoginActivity::class.java)
+        val intent = Intent(baseContext, OpcionesActivity::class.java)
         startActivity(intent)
     }
 
@@ -191,6 +220,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
             isFirstUpdate = false
         }
+
+        val location = locationRequest(location.latitude.toString(), location.longitude.toString())
+
+        RetrofitClient.create(applicationContext).updateUserLocation(location).enqueue(object :
+            Callback<defaultResponse> {
+            override fun onResponse(call: Call<defaultResponse>, response: Response<defaultResponse>){
+                if(response.isSuccessful){
+                    Log.i("USER LOCATION", "updated sucesfully")
+                }else{
+                    Toast.makeText(this@MapsActivity, "couldn't update location", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<defaultResponse>, t: Throwable) {
+                Toast.makeText(this@MapsActivity, "Error en la conexión", Toast.LENGTH_SHORT).show()
+            }
+        })
+
     }
 
 
