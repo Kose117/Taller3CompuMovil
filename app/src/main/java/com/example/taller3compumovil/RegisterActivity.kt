@@ -68,7 +68,7 @@ class RegisterActivity : AppCompatActivity() {
         val registerRequest = RegisterRequest(name, lastname, email, password, cc)
 
 
-        RetrofitClient.instance.registerUser(registerRequest).enqueue(object : Callback<LoginResponse>{
+        RetrofitClient.create(applicationContext).registerUser(registerRequest).enqueue(object : Callback<LoginResponse>{
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>){
                 if(response.isSuccessful){
                     val token = response.body()?.token

@@ -37,21 +37,21 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun login(email: String, password: String){
-        val loginrequest = LoginRequest(email, password)
+        val loginRequest = LoginRequest(email, password)
 
-        RetrofitClient.instance.loginUser(loginrequest).enqueue(object :
+        RetrofitClient.create(applicationContext).loginUser(loginRequest).enqueue(object :
             Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>){
                 if(response.isSuccessful){
                     val token = response.body()?.token
-                    Log.i("AUTH TOKEN", token.toString())
+                    Log.i("AUTH TOKEN", token ?: "null")
                     if(token != null){
                         guardarToken(token)
-                        val intent = Intent(baseContext, MapsActivity::class.java)
+                        val intent = Intent(this@LoginActivity, MapsActivity::class.java)
                         startActivity(intent)
                     }
                 }else{
-                    Toast.makeText(this@LoginActivity, "Server Internal Error", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "Authentication failed", Toast.LENGTH_SHORT).show()
                 }
             }
 
