@@ -87,7 +87,6 @@ class RegisterActivity : AppCompatActivity() {
                 Toast.makeText(this@RegisterActivity, "Error en la conexión", Toast.LENGTH_SHORT).show()
             }
         })
-
     }
 
     private fun guardarToken(token: String) {

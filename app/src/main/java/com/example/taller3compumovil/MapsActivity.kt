@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,8 +23,14 @@ import com.example.taller3compumovil.databinding.ActivityMapsBinding
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
+import models.availabilityState
+import models.availabilityStateRequest
+import network.RetrofitClient
 import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 
 
@@ -94,9 +101,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             startActivity(intent)
         }
 
+        binding.cambiarEstado.setOnClickListener {
+            changeAvailabilityState()
+        }
+
         binding.cerrarSesion.setOnClickListener {
             borrarToken()
         }
+    }
+
+    private fun changeAvailabilityState () {
+        val state = availabilityStateRequest(available = true)
+        RetrofitClient.create(applicationContext).changeAvailability(state).enqueue(object : Callback<availabilityState> {
+            override fun onResponse(
+                call: Call<availabilityState>,
+                response: Response<availabilityState>
+            ) {
+                if(response.isSuccessful){
+                    val state = response.body()?.available
+                    Log.i("AVAILABILITY STATE", state.toString())
+                    Toast.makeText(this@MapsActivity, "Changed availability to " + state.toString(), Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this@MapsActivity, "Couldn't change availability, try again later", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<availabilityState>, t: Throwable) {
+                Toast.makeText(this@MapsActivity, "Error en la conexión", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun borrarToken() {
