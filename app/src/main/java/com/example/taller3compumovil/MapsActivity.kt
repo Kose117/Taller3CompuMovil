@@ -138,7 +138,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             remove("token_jwt")
             apply()
         }
-        val intent = Intent(baseContext, LoginActivity::class.java)
+        val intent = Intent(baseContext, OpcionesActivity::class.java)
         startActivity(intent)
     }
 
@@ -180,6 +180,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
             isFirstUpdate = false
         }
+
+
     }
 
 
