@@ -4,9 +4,12 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import com.example.taller3compumovil.databinding.ActivityRegisterBinding
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
@@ -22,12 +25,17 @@ import network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
 
     private lateinit var uriCamera: Uri
+
+    private var imagen: String? = null
 
     private val getContentGallery = registerForActivityResult(
         ActivityResultContracts.GetContent()
@@ -49,6 +57,8 @@ class RegisterActivity : AppCompatActivity() {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        var imagen: Bitmap?
+
         binding.botonSiguiente.setOnClickListener {
             var name = binding.nombre.text.toString()
             var lastname = binding.apellido.text.toString()
@@ -67,7 +77,6 @@ class RegisterActivity : AppCompatActivity() {
     private fun register(name: String, lastname: String, email: String, password: String, cc: String) {
         val registerRequest = RegisterRequest(name, lastname, email, password, cc)
 
-
         RetrofitClient.create(applicationContext).registerUser(registerRequest).enqueue(object : Callback<LoginResponse>{
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>){
                 if(response.isSuccessful){
@@ -75,7 +84,12 @@ class RegisterActivity : AppCompatActivity() {
                     Log.i("AUTH TOKEN", token.toString())
                     if(token != null){
                         guardarToken(token)
+
+
                         val intent = Intent(baseContext, MapsActivity::class.java)
+
+                        intent.putExtra("imagen", imagen)
+
                         startActivity(intent)
                     }
                 }else{
@@ -155,9 +169,31 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun loadImage(uri: Uri?) {
         uri?.let {
+            imagen = saveImageToExternalStorage(BitmapFactory.decodeStream(contentResolver.openInputStream(it)))
             binding.imagenPerfil.setImageURI(uri)
         }
     }
+
+    private fun saveImageToExternalStorage(bitmap: Bitmap): String? {
+        val filename = "imagen_perfil.jpg"
+        var fos: FileOutputStream? = null
+        var fileUri: String? = null
+        try {
+            val dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            val file = File(dir, filename)
+            fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            fos.flush()
+            fos.close()
+            fileUri = file.absolutePath
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            fos?.close()
+        }
+        return fileUri
+    }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

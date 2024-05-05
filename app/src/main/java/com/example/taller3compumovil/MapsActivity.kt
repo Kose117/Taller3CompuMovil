@@ -8,6 +8,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 
 
 import android.location.Location
@@ -82,6 +83,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
                         updateLocationUI(it)
                     }
                 }
+            }
+
+            val imagen = intent.getStringExtra("imagen")
+            if(imagen != null){
+                val bitmap = BitmapFactory.decodeFile(imagen)
+
+                Log.i("IMG", imagen)
+                Log.i("IMG", "La imagen SI llego")
+            } else {
+                Log.i("IMG", "La imagen NO llego")
             }
 
             setupSensor()
