@@ -1,18 +1,27 @@
 package com.example.taller3compumovil
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import com.example.taller3compumovil.databinding.ActivityRegisterBinding
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import models.LoginResponse
+import models.RegisterRequest
+import network.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 
 class RegisterActivity : AppCompatActivity() {
@@ -39,14 +48,53 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        BotonLogin()
+
+        binding.botonSiguiente.setOnClickListener {
+            var name = binding.nombre.text.toString()
+            var lastname = binding.apellido.text.toString()
+            var email = binding.mail.text.toString()
+            var password = binding.contra.text.toString()
+            val cc = binding.numID.text.toString()
+
+            if(name.isNotEmpty() && lastname.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()){
+                register(name, lastname, email, password, cc)
+            }
+        }
+
         configurarBotonSiguiente()
     }
 
-    private fun BotonLogin() {
-        binding.botonSiguiente.setOnClickListener {
-            val intent = Intent(this, MapsActivity::class.java)
-            startActivity(intent)
+    private fun register(name: String, lastname: String, email: String, password: String, cc: String) {
+        val registerRequest = RegisterRequest(name, lastname, email, password, cc)
+
+
+        RetrofitClient.instance.registerUser(registerRequest).enqueue(object : Callback<LoginResponse>{
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>){
+                if(response.isSuccessful){
+                    val token = response.body()?.token
+                    Log.i("AUTH TOKEN", token.toString())
+                    if(token != null){
+                        guardarToken(token)
+                        val intent = Intent(baseContext, MapsActivity::class.java)
+                        startActivity(intent)
+                    }
+                }else{
+                    Toast.makeText(this@RegisterActivity, "Server Internal Error", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Toast.makeText(this@RegisterActivity, "Error en la conexión", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+    }
+
+    private fun guardarToken(token: String) {
+        val sharedPreferences = getSharedPreferences("prefs_usuario", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("token_jwt", token)
+            apply()
         }
     }
 
@@ -102,7 +150,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun abrirGaleria() {
-            getContentGallery.launch("image/*")
+        getContentGallery.launch("image/*")
     }
 
 
