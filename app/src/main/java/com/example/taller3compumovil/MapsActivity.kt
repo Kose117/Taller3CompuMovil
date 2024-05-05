@@ -54,26 +54,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        locationClient = LocationServices.getFusedLocationProviderClient(this)
-        setupMap()
-        permissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        val sharedPreferences = getSharedPreferences("prefs_usuario", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("token_jwt", null)
+        if(token == null){
+            val intent = Intent(baseContext, LoginActivity::class.java)
+            startActivity(intent)
+        }else{
+            locationClient = LocationServices.getFusedLocationProviderClient(this)
+            setupMap()
+            permissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
-        binding.posicionar.setOnClickListener {
-            currentLocationMarker?.position?.let { pos -> moveMarkerToLocation(pos) }
-        }
+            binding.posicionar.setOnClickListener {
+                currentLocationMarker?.position?.let { pos -> moveMarkerToLocation(pos) }
+            }
 
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.lastLocation?.let {
-                    lastLocation = it
-                    updateLocationUI(it)
+            locationCallback = object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    locationResult.lastLocation?.let {
+                        lastLocation = it
+                        updateLocationUI(it)
+                    }
                 }
             }
-        }
 
-        setupSensor()
-        createLocationRequest()
-        BotonDisponibles()
+            setupSensor()
+            createLocationRequest()
+            BotonDisponibles()
+        }
     }
 
     private fun setupMap() {
@@ -86,6 +93,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             val intent = Intent(this, DisponiblesActivity::class.java)
             startActivity(intent)
         }
+
+        binding.cerrarSesion.setOnClickListener {
+            borrarToken()
+        }
+    }
+
+    private fun borrarToken() {
+        val sharedPreferences = getSharedPreferences("prefs_usuario", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            remove("token_jwt")
+            apply()
+        }
+        val intent = Intent(baseContext, LoginActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
