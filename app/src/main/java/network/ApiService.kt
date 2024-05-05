@@ -6,6 +6,8 @@ import models.RegisterRequest
 import models.availabilityResponse
 import models.availabilityState
 import models.availabilityStateRequest
+import models.user.defaultResponse
+import models.user.locationRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -26,6 +28,10 @@ interface ApiService {
     fun getAvailableUsers():Call<availabilityResponse>
 
     @Authorized
-    @PUT("user/availability")
+    @PUT("user/availability/")
     fun changeAvailability(@Body request: availabilityStateRequest): Call<availabilityState>
+
+    @Authorized
+    @PUT("user/location/")
+    fun updateUserLocation(@Body request: locationRequest): Call<defaultResponse>
 }

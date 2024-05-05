@@ -24,8 +24,11 @@ import com.example.taller3compumovil.databinding.ActivityMapsBinding
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
+import models.LoginResponse
 import models.availabilityState
 import models.availabilityStateRequest
+import models.user.defaultResponse
+import models.user.locationRequest
 import network.RetrofitClient
 import org.json.JSONArray
 import org.json.JSONObject
@@ -192,6 +195,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             isFirstUpdate = false
         }
 
+        val location = locationRequest(location.latitude.toString(), location.longitude.toString())
+
+        RetrofitClient.create(applicationContext).updateUserLocation(location).enqueue(object :
+            Callback<defaultResponse> {
+            override fun onResponse(call: Call<defaultResponse>, response: Response<defaultResponse>){
+                if(response.isSuccessful){
+                    Log.i("USER LOCATION", "updated sucesfully")
+                }else{
+                    Toast.makeText(this@MapsActivity, "couldn't update location", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<defaultResponse>, t: Throwable) {
+                Toast.makeText(this@MapsActivity, "Error en la conexión", Toast.LENGTH_SHORT).show()
+            }
+        })
 
     }
 
