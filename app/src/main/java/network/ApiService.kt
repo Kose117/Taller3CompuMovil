@@ -40,7 +40,7 @@ interface ApiService {
 
 
     @Authorized
-    @POST("user/upload/picture")
+    @POST("blob/upload/")
     fun uploadImage(@Part image: MultipartBody.Part): Call<uploadImageResponse>
 
 }
