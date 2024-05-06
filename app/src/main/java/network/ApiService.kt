@@ -7,9 +7,11 @@ import models.availabilityResponse
 import models.availabilityState
 import models.availabilityStateRequest
 import models.user.defaultResponse
+import models.user.getImageRequest
 import models.user.locationRequest
 import models.user.uploadImageResponse
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -44,5 +46,10 @@ interface ApiService {
     @Multipart
     @POST("blob/upload/")
     fun uploadImage(@Part image: MultipartBody.Part): Call<uploadImageResponse>
+
+
+    @Authorized
+    @POST("blob/transfer")
+    fun fetchImage(@Body request: getImageRequest): Call<ResponseBody>
 
 }
