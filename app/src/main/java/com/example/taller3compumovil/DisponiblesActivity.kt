@@ -1,5 +1,6 @@
 package com.example.taller3compumovil
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -40,6 +41,9 @@ class DisponiblesActivity : AppCompatActivity(), ActivosAdapter.OnButtonClickLis
     override fun onButtonClick(user: User) {
         // Maneja el clic del elemento aquí
         Toast.makeText(this, "Clic en: ${user._id}", Toast.LENGTH_SHORT).show()
+        intent = Intent(this, MapsPairActivity::class.java)
+        intent.putExtra("id", user._id)
+        startActivity(intent)
     }
 
     private fun loadUsuarios() {
