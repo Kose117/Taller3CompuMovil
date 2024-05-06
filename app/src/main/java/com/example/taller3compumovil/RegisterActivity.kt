@@ -57,8 +57,6 @@ class RegisterActivity : AppCompatActivity() {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var imagen: Bitmap?
-
         binding.botonSiguiente.setOnClickListener {
             var name = binding.nombre.text.toString()
             var lastname = binding.apellido.text.toString()
@@ -110,7 +108,7 @@ class RegisterActivity : AppCompatActivity() {
             apply()
         }
     }
-
+    ///storage/emulated/0/Android/data/com.example.taller3compumovil/files/Pictures/imagen_perfil.jpg
     private fun configurarBotonSiguiente() {
         binding.edit.setOnClickListener {
             showPopupMenuPhotos(it)
@@ -170,6 +168,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun loadImage(uri: Uri?) {
         uri?.let {
             imagen = saveImageToExternalStorage(BitmapFactory.decodeStream(contentResolver.openInputStream(it)))
+            Log.i("IMG", "Imagen guardada en: $imagen")
             binding.imagenPerfil.setImageURI(uri)
         }
     }
@@ -181,8 +180,15 @@ class RegisterActivity : AppCompatActivity() {
         try {
             val dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             val file = File(dir, filename)
+
+            // Redimensiona la imagen al tamaño deseado (720p)
+            val resizedBitmap = Bitmap.createScaledBitmap(bitmap, 1280, 720, true)
+
             fos = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+
+            // Comprime y guarda la imagen redimensionada
+            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+
             fos.flush()
             fos.close()
             fileUri = file.absolutePath

@@ -94,8 +94,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             }
 
             val imagen = intent.getStringExtra("imagen")
+
             if(imagen != null){
                 val bitmap = BitmapFactory.decodeFile(imagen)
+
                 val file = bitmapToFile(applicationContext, bitmap, "profile_picture")
                 val requestFile = file.asRequestBody("image/png".toMediaTypeOrNull())
 
