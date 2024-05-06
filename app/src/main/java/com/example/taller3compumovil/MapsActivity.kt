@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 
-
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
@@ -24,7 +23,6 @@ import com.example.taller3compumovil.databinding.ActivityMapsBinding
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
-import models.LoginResponse
 import models.availabilityState
 import models.availabilityStateRequest
 import models.user.defaultResponse
@@ -34,13 +32,11 @@ import network.RetrofitClient
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import util.bitmapToFile
-import java.io.File
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListener {
@@ -230,13 +226,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
             Callback<defaultResponse> {
             override fun onResponse(call: Call<defaultResponse>, response: Response<defaultResponse>){
                 if(response.isSuccessful){
-                    Log.i("USER LOCATION", "updated sucesfully")
+                    Log.i("USER LOCATION IN MAPS", "updated sucesfully")
                 }else{
+                    Log.i("USER LOCATION IN MAPS", "couldn't update location")
                     Toast.makeText(this@MapsActivity, "couldn't update location", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<defaultResponse>, t: Throwable) {
+                Log.i("USER LOCATION IN MAPS", "Error en la conexion")
                 Toast.makeText(this@MapsActivity, "Error en la conexión", Toast.LENGTH_SHORT).show()
             }
         })

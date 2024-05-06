@@ -14,4 +14,5 @@
     <string name="lista">Listar disponibles</string>
     <string name="posicion">Posición </string>
     <string name="actividad">Taller 3 </string>
+    <string name="title_activity_maps_pair">MapsPairActivity</string>
 </resources>
