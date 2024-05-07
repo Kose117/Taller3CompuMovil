@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.example.taller3compumovil.databinding.ActivityMapsBinding
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -41,11 +40,16 @@ import network.WebSocketClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class MapsPairActivity : AppCompatActivity(),  OnMapReadyCallback, SensorEventListener {
     private lateinit var map: GoogleMap
     private lateinit var locationClient: FusedLocationProviderClient
     private var currentLocationMarker: Marker? = null
+    private var parterLocationMarker: Marker? = null
     private var lastLocation: Location? = null
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
@@ -56,6 +60,9 @@ class MapsPairActivity : AppCompatActivity(),  OnMapReadyCallback, SensorEventLi
     private lateinit var sensorManager: SensorManager
     private var lightSensor: Sensor? = null
     private val umbralBajo = 50f
+    private var lat: String? = null
+    private var long: String? = null
+    private var id: String? = null
 
     private val permissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -96,20 +103,46 @@ class MapsPairActivity : AppCompatActivity(),  OnMapReadyCallback, SensorEventLi
             }
         }
 
-        val id = intent.getStringExtra("id")
+        id = intent.getStringExtra("id")
         Log.i("USER ID", id.toString())
-        webSocketClient = WebSocketClient("ws://ws0nr9l7-8080.use2.devtunnels.ms/api/user/ws/${id.toString()}", EchoWebSocketListener())
-
-        binding.distancia.text = id
-
+        webSocketClient = WebSocketClient("ws://ws0nr9l7-8080.use2.devtunnels.ms/api/user/ws/${id.toString()}", EchoWebSocketListener(applicationContext))
 
         setupSensor()
         createLocationRequest()
     }
 
+    override fun onResume() {
+        super.onResume()
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult.lastLocation?.let {
+                    lastLocation = it
+                    updateLocationUI(it)
+                }
+            }
+        }
+        id = intent.getStringExtra("id")
+        webSocketClient = WebSocketClient("ws://ws0nr9l7-8080.use2.devtunnels.ms/api/user/ws/${id.toString()}", EchoWebSocketListener(applicationContext))
+        setupSensor()
+        createLocationRequest()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        webSocketClient.close()
+        val sharedPref = applicationContext.getSharedPreferences("miPref", Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.clear() // Borrar todas las preferencias compartidas
+        editor.apply()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         webSocketClient.close()
+        val sharedPref = applicationContext.getSharedPreferences("miPref", Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.clear() // Borrar todas las preferencias compartidas
+        editor.apply()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -146,6 +179,27 @@ class MapsPairActivity : AppCompatActivity(),  OnMapReadyCallback, SensorEventLi
             override fun onResponse(call: Call<defaultResponse>, response: Response<defaultResponse>){
                 if(response.isSuccessful){
                     Log.i("USER LOCATION PAIRS", "updated sucesfully")
+                    val sharedPref = applicationContext.getSharedPreferences("miPref", Context.MODE_PRIVATE)
+                    lat = sharedPref.getString("latitude", null)
+                    long = sharedPref.getString("longitude", null)
+                    if (lat != null && long != null) {
+                        Log.i("POSICION MAPS", "$lat + $long")
+
+                        val posicion = LatLng(lat!!.toDouble(), long!!.toDouble())
+
+                        parterLocationMarker?.remove()
+                        parterLocationMarker = map.addMarker(
+                            MarkerOptions()
+                                .position(posicion)
+                                .title("Partner Location")
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                        )
+
+                        calcularDistancia(location.latitude.toString(),location.longitude.toString(),lat!!,long!!)
+                    } else {
+                        Log.e("POSICION MAPS", "No se encontraron datos de latitud y longitud en SharedPreferences")
+                    }
+
                 }else{
                     Toast.makeText(this@MapsPairActivity, "couldn't update location", Toast.LENGTH_SHORT).show()
                     Log.i("USER LOCATION PAIRS", "couldn't update location")
@@ -195,6 +249,20 @@ class MapsPairActivity : AppCompatActivity(),  OnMapReadyCallback, SensorEventLi
         lightSensor?.let {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
         }
+    }
+
+
+    private fun calcularDistancia(lat1:String, long1:String, lat2:String, long2:String){
+        val radioTierra = 6371 // Radio de la Tierra en kilómetros
+        val dLat = Math.toRadians(lat2.toDouble() - lat1.toDouble())
+        val dLon = Math.toRadians(long2.toDouble() - long1.toDouble())
+        val a = sin(dLat / 2) * sin(dLat / 2) + cos(Math.toRadians(lat1.toDouble())) * cos(Math.toRadians(lat2.toDouble())) * sin(dLon / 2) * sin(dLon / 2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        val distancia = radioTierra * c
+
+        val texto = String.format("%.${1}f", distancia)
+
+        binding.distancia.text = texto + " Kilometros"
     }
 
 
