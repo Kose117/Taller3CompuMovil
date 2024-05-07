@@ -62,4 +62,6 @@ dependencies {
 
     implementation ("com.github.bumptech.glide:glide:4.13.2")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.13.2")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.1")
+
 }
