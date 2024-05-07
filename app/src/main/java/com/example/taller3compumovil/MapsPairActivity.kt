@@ -265,7 +265,6 @@ class MapsPairActivity : AppCompatActivity(),  OnMapReadyCallback, SensorEventLi
         binding.distancia.text = texto + " Kilometros"
     }
 
-
 }
 
 

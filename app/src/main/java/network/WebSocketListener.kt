@@ -2,6 +2,8 @@ package network
 
 import android.content.Context
 import android.util.Log
+import com.google.gson.Gson
+import models.user.locUser
 import okhttp3.*
 import org.json.JSONObject
 
@@ -28,6 +30,7 @@ class EchoWebSocketListener(context: Context) : WebSocketListener() {
         editor.putString("latitude", lat)
         editor.putString("longitude", long)
         editor.apply()
+
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
