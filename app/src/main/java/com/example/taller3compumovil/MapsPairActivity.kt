@@ -35,7 +35,9 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import models.user.defaultResponse
 import models.user.locationRequest
+import network.EchoWebSocketListener
 import network.RetrofitClient
+import network.WebSocketClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,6 +50,8 @@ class MapsPairActivity : AppCompatActivity(),  OnMapReadyCallback, SensorEventLi
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private var isFirstUpdate = true
+
+    private lateinit var webSocketClient: WebSocketClient
 
     private lateinit var sensorManager: SensorManager
     private var lightSensor: Sensor? = null
@@ -93,12 +97,19 @@ class MapsPairActivity : AppCompatActivity(),  OnMapReadyCallback, SensorEventLi
         }
 
         val id = intent.getStringExtra("id")
+        Log.i("USER ID", id.toString())
+        webSocketClient = WebSocketClient("ws://ws0nr9l7-8080.use2.devtunnels.ms/api/user/ws/${id.toString()}", EchoWebSocketListener())
 
         binding.distancia.text = id
 
 
         setupSensor()
         createLocationRequest()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        webSocketClient.close()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
