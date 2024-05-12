@@ -34,14 +34,12 @@ class DisponiblesActivity : AppCompatActivity(), ActivosAdapter.OnButtonClickLis
     private var lista: List<User>? = null
     private lateinit var webSocketClient: WebSocketClient
 
-
-    private val CHANNEL_ID = "channel_id"
-    private val notificacionesid = 101
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDisponiblesBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
 
         val layoutManager = LinearLayoutManager(this)
 
@@ -50,14 +48,30 @@ class DisponiblesActivity : AppCompatActivity(), ActivosAdapter.OnButtonClickLis
         val dividerItemDecoration = DividerItemDecoration(this, layoutManager.orientation)
         binding.listaActivos.addItemDecoration(dividerItemDecoration)
 
-        createNotificationChannel()
 
         adapter = ActivosAdapter(this,this)
         binding.listaActivos.adapter = adapter
+
+        webSocketClient = WebSocketClient("ws://ws0nr9l7-8080.use2.devtunnels.ms/api/user/ws", EchoWebSocketListener2(applicationContext))
+
+
         loadUsuarios()
 
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        webSocketClient = WebSocketClient("ws://ws0nr9l7-8080.use2.devtunnels.ms/api/user/ws", EchoWebSocketListener2(applicationContext))
+        loadUsuarios()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        webSocketClient.close()
+    }
+
+
 
     override fun onButtonClick(user: User) {
         // Maneja el clic del elemento aquí
@@ -67,7 +81,6 @@ class DisponiblesActivity : AppCompatActivity(), ActivosAdapter.OnButtonClickLis
     }
 
     private fun loadUsuarios() {
-        webSocketClient = WebSocketClient("ws://ws0nr9l7-8080.use2.devtunnels.ms/api/user/ws", EchoWebSocketListener2(applicationContext))
         RetrofitClient.create(applicationContext).getAvailableUsers().enqueue(object : Callback<availabilityResponse> {
             override fun onResponse(
                 call: Call<availabilityResponse>,
@@ -94,29 +107,4 @@ class DisponiblesActivity : AppCompatActivity(), ActivosAdapter.OnButtonClickLis
 
     }
 
-    private fun createNotificationChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val name = "Titulo"
-            val descripcion = "Notificacion"
-            val importancia = NotificationManager.IMPORTANCE_DEFAULT
-            val channel =  NotificationChannel(CHANNEL_ID,name,importancia).apply {
-                description = descripcion
-            }
-            val notificationManager : NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    private fun sendNotification(){
-
-        val builder = NotificationCompat.Builder(this , CHANNEL_ID)
-            .setSmallIcon(R.drawable.vaultboy)
-            .setContentTitle("Ejemplo")
-            .setContentText("Example")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-        with(NotificationManagerCompat.from(this)){
-            notify(notificacionesid, builder.build())
-        }
-
-    }
 }
