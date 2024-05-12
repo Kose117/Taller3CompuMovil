@@ -11,7 +11,10 @@ import com.example.taller3compumovil.adapters.ActivosAdapter
 import com.example.taller3compumovil.databinding.ActivityDisponiblesBinding
 import models.User
 import models.availabilityResponse
+import network.EchoWebSocketListener
+import network.EchoWebSocketListener2
 import network.RetrofitClient
+import network.WebSocketClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,6 +23,8 @@ class DisponiblesActivity : AppCompatActivity(), ActivosAdapter.OnButtonClickLis
     private lateinit var adapter: ActivosAdapter
     private lateinit var binding: ActivityDisponiblesBinding
     private var lista: List<User>? = null
+    private lateinit var webSocketClient: WebSocketClient
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +51,7 @@ class DisponiblesActivity : AppCompatActivity(), ActivosAdapter.OnButtonClickLis
     }
 
     private fun loadUsuarios() {
+        webSocketClient = WebSocketClient("ws://ws0nr9l7-8080.use2.devtunnels.ms/api/user/ws", EchoWebSocketListener2(applicationContext))
         RetrofitClient.create(applicationContext).getAvailableUsers().enqueue(object : Callback<availabilityResponse> {
             override fun onResponse(
                 call: Call<availabilityResponse>,

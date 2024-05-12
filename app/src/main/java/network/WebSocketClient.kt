@@ -3,7 +3,7 @@ package network
 import okhttp3.*
 import java.util.concurrent.TimeUnit
 
-class WebSocketClient(url: String, private val listener: WebSocketListener) {
+class   WebSocketClient(url: String, private val listener: WebSocketListener) {
     private var client: OkHttpClient? = null
     private var ws: WebSocket? = null
 
